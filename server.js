@@ -13,12 +13,13 @@ app.use(express.json());
 app.use(express.static(__dirname));
 
 // ==========================
-// DARAJA CREDENTIALS
+// 🔐 DARAJA CREDENTIALS
+// (Use ENV in production later)
 // ==========================
-const consumerKey = "NJ8isz5U7YGNsCewhRpjjj1d0OwKL6mngvw5KNXaKdTtM6XQ";
-const consumerSecret = "KaCGk5ddHXZkzoU5ABFq3RshjodD11XyZWPdYOLP30orJm06V7GmNPvC4oceARfe";
+const consumerKey = process.env.consumerKey || "YOUR_CONSUMER_KEY";
+const consumerSecret = process.env.consumerSecret || "YOUR_CONSUMER_SECRET";
 const shortcode = "174379";
-const passkey = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
+const passkey = process.env.passkey || "YOUR_PASSKEY";
 
 // ==========================
 // FORMAT PHONE
@@ -34,9 +35,9 @@ function formatPhone(phone) {
 // GET ACCESS TOKEN
 // ==========================
 async function getAccessToken() {
-  const auth = Buffer.from(`${consumerKey}:${consumerSecret}`).toString("base64");
-
-  console.log("🔄 Getting access token...");
+  const auth = Buffer.from(
+    `${consumerKey}:${consumerSecret}`
+  ).toString("base64");
 
   const response = await axios.get(
     "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials",
@@ -47,8 +48,6 @@ async function getAccessToken() {
     }
   );
 
-  console.log("✅ Token received");
-
   return response.data.access_token;
 }
 
@@ -56,17 +55,25 @@ async function getAccessToken() {
 // STK PUSH ROUTE
 // ==========================
 app.post("/stkpush", async (req, res) => {
-  console.log("📩 STK request received:", req.body);
+  console.log("📩 STK request:", req.body);
 
   try {
     let { phone, amount } = req.body;
 
     if (!phone || !amount) {
-      return res.status(400).json({ error: "Phone and amount required" });
+      return res.status(400).json({
+        error: "Phone and amount required"
+      });
     }
 
     phone = formatPhone(phone);
     amount = Number(amount);
+
+    if (isNaN(amount) || amount <= 0) {
+      return res.status(400).json({
+        error: "Invalid amount"
+      });
+    }
 
     const token = await getAccessToken();
 
@@ -79,10 +86,6 @@ app.post("/stkpush", async (req, res) => {
       shortcode + passkey + timestamp
     ).toString("base64");
 
-    console.log("📞 Phone:", phone);
-    console.log("💰 Amount:", amount);
-    console.log("🔐 Password generated");
-
     const stkResponse = await axios.post(
       "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
       {
@@ -94,7 +97,7 @@ app.post("/stkpush", async (req, res) => {
         PartyA: phone,
         PartyB: shortcode,
         PhoneNumber: phone,
-        CallBackURL: "https://mwasiringi-forum.onrender.com/callback"
+        CallBackURL: "https://mwasiringi-forum.onrender.com/callback",
         AccountReference: "MWASIRINGI",
         TransactionDesc: "Forum Payment"
       },
@@ -119,10 +122,12 @@ app.post("/stkpush", async (req, res) => {
 });
 
 // ==========================
-// CALLBACK
+// CALLBACK ROUTE
 // ==========================
 app.post("/callback", (req, res) => {
-  console.log("📥 CALLBACK RECEIVED:", req.body);
+  console.log("📥 CALLBACK RECEIVED:");
+  console.log(JSON.stringify(req.body, null, 2));
+
   res.json({ message: "Callback received" });
 });
 
@@ -134,10 +139,10 @@ app.get("/", (req, res) => {
 });
 
 // ==========================
-// START SERVER
+// START SERVER (RENDER SAFE)
 // ==========================
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
