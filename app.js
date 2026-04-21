@@ -68,8 +68,8 @@ async function pay() {
   }
 
   try {
-    // 🔥 CHANGE THIS AFTER DEPLOYMENT
-    const API_URL = "https://YOUR-RENDER-URL.onrender.com";
+    // 🔥 REPLACE WITH YOUR REAL RENDER URL
+    const API_URL = "https://mwasiringi-forum.onrender.com";
 
     const res = await fetch(`${API_URL}/stkpush`, {
       method: "POST",
@@ -90,7 +90,7 @@ async function pay() {
 
   } catch (err) {
     console.log("❌ PAY ERROR:", err);
-    alert("Payment failed");
+    alert("❌ Network error or server unreachable");
   }
 }
 
