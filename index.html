@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MWASIRINGI FORUM</title>
+
+  <!-- Chart.js -->
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body { font-family: Arial, sans-serif; padding: 15px; }
+    hr { margin: 20px 0; }
+    input, button { margin: 5px 0; padding: 8px; }
+    button { cursor: pointer; }
+  </style>
+
+</head>
+
+<body>
+
+<h1>MWASIRINGI FORUM</h1>
+
+<!-- ================= ROLE ================= -->
+
+<h3>Welcome</h3>
+<div>
+  Role: <span id="userRole">Loading...</span>
+</div>
+
+<hr>
+
+<!-- ================= ADMIN PANEL ================= -->
+
+<div id="adminPanel" style="display:none;">
+  <h3>👑 Admin Panel</h3>
+
+  <input id="targetUserId" placeholder="User ID">
+
+  <button onclick="setUserRole(document.getElementById('targetUserId').value, 'chairman')">
+    Make Chairman
+  </button>
+
+  <button onclick="setUserRole(document.getElementById('targetUserId').value, 'treasurer')">
+    Make Treasurer
+  </button>
+
+  <button onclick="setUserRole(document.getElementById('targetUserId').value, 'member')">
+    Make Member
+  </button>
+</div>
+
+<hr>
+
+<!-- ================= DASHBOARD ================= -->
+
+<h2>📊 Dashboard</h2>
+
+<div>👥 Members: <span id="totalMembers">0</span></div>
+<div>👣 Visits: <span id="totalVisits">0</span></div>
+<div>💰 Money: <span id="totalMoney">0</span></div>
+
+<hr>
+
+<!-- ================= PAYMENT ================= -->
+
+<h3>💰 Payment Section</h3>
+
+<input id="payPhone" type="text" placeholder="Enter phone (0712345678)" />
+<br>
+
+<input id="payAmount" type="number" placeholder="Enter amount" />
+<br>
+
+<button onclick="pay()">Pay Now</button>
+
+<script>
+function pay() {
+  const phone = document.getElementById("payPhone").value;
+  const amount = document.getElementById("payAmount").value;
+
+  if (!phone || !amount) {
+    alert("❗ Enter phone and amount");
+    return;
+  }
+
+  fetch("http://localhost:3000/stkpush", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      phone: phone,
+      amount: amount
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    console.log("Response:", data);
+
+    if (data.errorCode) {
+      alert("❌ Error: " + data.errorMessage);
+    } else {
+      alert("✅ STK sent! Check your phone 📱");
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    alert("❌ Payment failed");
+  });
+}
+</script>
+
+<h3>📜 Payment History</h3>
+<ul id="paymentList"></ul>
+
+<hr>
+
+<!-- ================= CHART ================= -->
+
+<h3>📊 Analytics</h3>
+<canvas id="moneyChart" width="400" height="200"></canvas>
+
+<hr>
+
+<!-- ================= AUTH ================= -->
+
+<h3>Register / Login</h3>
+
+<input id="email" type="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+
+<br>
+
+<button onclick="register()">Register</button> <button onclick="login()">Login</button>
+
+<hr>
+
+<!-- ================= MEMBERS ================= -->
+
+<h3>Members</h3>
+<button id="addMemberBtn" onclick="addMember()">Add Member</button>
+<ul id="members"></ul>
+
+<hr>
+
+<!-- ================= VISITS ================= -->
+
+<h3>Visits</h3>
+
+<input id="searchVisit" placeholder="Search visits..." onkeyup="searchVisits()">
+<br>
+
+<input type="file" id="visitImage">
+<br>
+
+<button id="addVisitBtn" onclick="addVisit()">Add Visit</button>
+
+<ul id="visitsList"></ul>
+
+<hr>
+
+<!-- ================= FIREBASE ================= -->
+
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
+
+<!-- YOUR APP -->
+
+<script src="app.js"></script>
+
+</body>
+</html>

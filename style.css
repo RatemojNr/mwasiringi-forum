@@ -1,0 +1,18 @@
+body {
+  font-family: Arial;
+  background: hwb(220 82% 8%);
+  color: white;
+  text-align: center;
+}
+
+input {
+  padding: 10px;
+  margin: 5px;
+}
+
+button {
+  padding: 10px;
+  background: hsl(129, 94%, 51%);
+  color: white;
+  border: none;
+}
