@@ -94,7 +94,7 @@ app.post("/stkpush", async (req, res) => {
         PartyA: phone,
         PartyB: shortcode,
         PhoneNumber: phone,
-        CallBackURL: "https://mydomain.com/callback",
+        CallBackURL: "https://mwasiringi-forum.onrender.com/callback"
         AccountReference: "MWASIRINGI",
         TransactionDesc: "Forum Payment"
       },

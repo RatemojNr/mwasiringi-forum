@@ -56,7 +56,7 @@ function checkPermissions(role) {
 }
 
 // ==============================
-// STK PAYMENT (FIXED - SINGLE VERSION)
+// STK PAYMENT (FIXED FOR DEPLOYMENT)
 // ==============================
 async function pay() {
   const phone = document.getElementById("payPhone")?.value;
@@ -68,7 +68,10 @@ async function pay() {
   }
 
   try {
-    const res = await fetch("http://localhost:5000/stkpush", {
+    // 🔥 CHANGE THIS AFTER DEPLOYMENT
+    const API_URL = "https://YOUR-RENDER-URL.onrender.com";
+
+    const res = await fetch(`${API_URL}/stkpush`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -79,8 +82,8 @@ async function pay() {
     const data = await res.json();
     console.log("📩 STK RESPONSE:", data);
 
-    if (data.errorCode) {
-      alert("❌ Error: " + data.errorMessage);
+    if (data.error) {
+      alert("❌ Payment failed");
     } else {
       alert("📱 STK sent! Check your phone");
     }
