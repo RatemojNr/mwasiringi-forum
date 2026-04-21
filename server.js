@@ -88,19 +88,19 @@ app.post("/stkpush", async (req, res) => {
 
     const stkResponse = await axios.post(
       "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
-      {
-        BusinessShortCode: shortcode,
-        Password: password,
-        Timestamp: timestamp,
-        TransactionType: "CustomerPayBillOnline",
-        Amount: amount,
-        PartyA: phone,
-        PartyB: shortcode,
-        PhoneNumber: phone,
-        CallBackURL: "https://mwasiringi-forum.onrender.com/callback",
-        AccountReference: "MWASIRINGI",
-        TransactionDesc: "Forum Payment"
-      },
+{
+  BusinessShortCode: shortcode,
+  Password: password,
+  Timestamp: timestamp,
+  TransactionType: "CustomerPayBillOnline",
+  Amount: amount,
+  PartyA: phone,
+  PartyB: shortcode,
+  PhoneNumber: phone,
+  CallBackURL: "https://mwasiringi-forum.onrender.com/callback",
+  AccountReference: "MWASIRINGI",
+  TransactionDesc: "Forum Payment"
+},
       {
         headers: {
           Authorization: `Bearer ${token}`
