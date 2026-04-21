@@ -13,8 +13,7 @@ app.use(express.json());
 app.use(express.static(__dirname));
 
 // ==========================
-// 🔐 DARAJA CREDENTIALS
-// (Use ENV in production later)
+// DARAJA CREDENTIALS
 // ==========================
 const consumerKey = process.env.consumerKey || "YOUR_CONSUMER_KEY";
 const consumerSecret = process.env.consumerSecret || "YOUR_CONSUMER_SECRET";
@@ -32,7 +31,7 @@ function formatPhone(phone) {
 }
 
 // ==========================
-// GET ACCESS TOKEN
+// ACCESS TOKEN
 // ==========================
 async function getAccessToken() {
   const auth = Buffer.from(
@@ -52,7 +51,7 @@ async function getAccessToken() {
 }
 
 // ==========================
-// STK PUSH ROUTE
+// STK PUSH
 // ==========================
 app.post("/stkpush", async (req, res) => {
   console.log("📩 STK request:", req.body);
@@ -61,19 +60,11 @@ app.post("/stkpush", async (req, res) => {
     let { phone, amount } = req.body;
 
     if (!phone || !amount) {
-      return res.status(400).json({
-        error: "Phone and amount required"
-      });
+      return res.status(400).json({ error: "Phone and amount required" });
     }
 
     phone = formatPhone(phone);
     amount = Number(amount);
-
-    if (isNaN(amount) || amount <= 0) {
-      return res.status(400).json({
-        error: "Invalid amount"
-      });
-    }
 
     const token = await getAccessToken();
 
@@ -88,19 +79,19 @@ app.post("/stkpush", async (req, res) => {
 
     const stkResponse = await axios.post(
       "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
-{
-  BusinessShortCode: shortcode,
-  Password: password,
-  Timestamp: timestamp,
-  TransactionType: "CustomerPayBillOnline",
-  Amount: amount,
-  PartyA: phone,
-  PartyB: shortcode,
-  PhoneNumber: phone,
-  CallBackURL: "https://mwasiringi-forum.onrender.com/callback",
-  AccountReference: "MWASIRINGI",
-  TransactionDesc: "Forum Payment"
-},
+      {
+        BusinessShortCode: shortcode,
+        Password: password,
+        Timestamp: timestamp,
+        TransactionType: "CustomerPayBillOnline",
+        Amount: amount,
+        PartyA: phone,
+        PartyB: shortcode,
+        PhoneNumber: phone,
+        CallBackURL: "https://mwasiringi-forum.onrender.com/callback",
+        AccountReference: "MWASIRINGI",
+        TransactionDesc: "Forum Payment"
+      },
       {
         headers: {
           Authorization: `Bearer ${token}`
@@ -122,7 +113,7 @@ app.post("/stkpush", async (req, res) => {
 });
 
 // ==========================
-// CALLBACK ROUTE
+// CALLBACK
 // ==========================
 app.post("/callback", (req, res) => {
   console.log("📥 CALLBACK RECEIVED:");
