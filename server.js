@@ -15,10 +15,10 @@ app.use(express.static(__dirname));
 // ==========================
 // DARAJA CREDENTIALS
 // ==========================
-const consumerKey = process.env.consumerKey || "YOUR_CONSUMER_KEY";
-const consumerSecret = process.env.consumerSecret || "YOUR_CONSUMER_SECRET";
+const consumerKey = process.env.consumerKey || "NJ8isz5U7YGNsCewhRpjjj1d0OwKL6mngvw5KNXaKdTtM6XQ";
+const consumerSecret = process.env.consumerSecret || "KaCGk5ddHXZkzoU5ABFq3RshjodD11XyZWPdYOLP30orJm06V7GmNPvC4oceARfe";
 const shortcode = "174379";
-const passkey = process.env.passkey || "YOUR_PASSKEY";
+const passkey = process.env.passkey || "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
 
 // ==========================
 // FORMAT PHONE
