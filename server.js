@@ -15,24 +15,28 @@ app.use(express.static(__dirname));
 // ==========================
 // DARAJA CREDENTIALS
 // ==========================
-const consumerKey = process.env.consumerKey || "NJ8isz5U7YGNsCewhRpjjj1d0OwKL6mngvw5KNXaKdTtM6XQ";
-const consumerSecret = process.env.consumerSecret || "KaCGk5ddHXZkzoU5ABFq3RshjodD11XyZWPdYOLP30orJm06V7GmNPvC4oceARfe";
+const consumerKey =
+  process.env.consumerKey ||
+  "NJ8isz5U7YGNsCewhRpjjj1d0OwKL6mngvw5KNXaKdTtM6XQ";
+
+const consumerSecret =
+  process.env.consumerSecret ||
+  "KaCGk5ddHXZkzoU5ABFq3RshjodD11XyZWPdYOLP30orJm06V7GmNPvC4oceARfe";
+
 const shortcode = "174379";
-const passkey = process.env.passkey || "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
+
+const passkey =
+  process.env.passkey ||
+  "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
 
 // ==========================
 // FORMAT PHONE
 // ==========================
 function formatPhone(phone) {
-  phone = phone.toString().replace(/\s/g, "").replace(/\+/g, "");
+  phone = String(phone).replace(/\s/g, "").replace(/\+/g, "");
 
-  if (phone.startsWith("0")) {
-    return "254" + phone.substring(1);
-  }
-
-  if (phone.startsWith("7")) {
-    return "254" + phone;
-  }
+  if (phone.startsWith("0")) return "254" + phone.slice(1);
+  if (phone.startsWith("7")) return "254" + phone;
 
   return phone;
 }
@@ -58,10 +62,10 @@ async function getAccessToken() {
 }
 
 // ==========================
-// STK PUSH
+// STK PUSH ROUTE
 // ==========================
 app.post("/stkpush", async (req, res) => {
-  console.log("📩 STK request:", req.body);
+  console.log("📩 STK request received:", req.body);
 
   try {
     let { phone, amount } = req.body;
@@ -76,9 +80,9 @@ app.post("/stkpush", async (req, res) => {
     }
 
     phone = formatPhone(phone);
-    amount = parseInt(amount);
+    amount = Number(amount);
 
-    if (isNaN(amount) || amount <= 0) {
+    if (!Number.isFinite(amount) || amount <= 0) {
       return res.status(400).json({
         error: "Invalid amount"
       });
@@ -125,10 +129,8 @@ app.post("/stkpush", async (req, res) => {
     return res.json(stkResponse.data);
 
   } catch (err) {
-    console.log(
-      "❌ FULL ERROR:",
-      JSON.stringify(err.response?.data || err.message, null, 2)
-    );
+    console.log("❌ DARAJA ERROR:");
+    console.log(JSON.stringify(err.response?.data || err.message, null, 2));
 
     return res.status(500).json({
       error: err.response?.data || err.message
@@ -137,7 +139,7 @@ app.post("/stkpush", async (req, res) => {
 });
 
 // ==========================
-// CALLBACK
+// CALLBACK ROUTE
 // ==========================
 app.post("/callback", (req, res) => {
   console.log("📥 CALLBACK RECEIVED:");
