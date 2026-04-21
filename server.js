@@ -24,10 +24,17 @@ const passkey = process.env.passkey || "YOUR_PASSKEY";
 // FORMAT PHONE
 // ==========================
 function formatPhone(phone) {
-  return phone
-    .replace(/\+/g, "")
-    .replace(/\s/g, "")
-    .replace(/^0/, "254");
+  phone = phone.toString().replace(/\s/g, "").replace(/\+/g, "");
+
+  if (phone.startsWith("0")) {
+    return "254" + phone.substring(1);
+  }
+
+  if (phone.startsWith("7")) {
+    return "254" + phone;
+  }
+
+  return phone;
 }
 
 // ==========================
@@ -59,12 +66,26 @@ app.post("/stkpush", async (req, res) => {
   try {
     let { phone, amount } = req.body;
 
+    // ======================
+    // VALIDATION
+    // ======================
     if (!phone || !amount) {
-      return res.status(400).json({ error: "Phone and amount required" });
+      return res.status(400).json({
+        error: "Phone and amount required"
+      });
     }
 
     phone = formatPhone(phone);
-    amount = Number(amount);
+    amount = parseInt(amount);
+
+    if (isNaN(amount) || amount <= 0) {
+      return res.status(400).json({
+        error: "Invalid amount"
+      });
+    }
+
+    console.log("📞 FINAL PHONE:", phone);
+    console.log("💰 FINAL AMOUNT:", amount);
 
     const token = await getAccessToken();
 
@@ -104,7 +125,10 @@ app.post("/stkpush", async (req, res) => {
     return res.json(stkResponse.data);
 
   } catch (err) {
-    console.log("❌ STK ERROR:", err.response?.data || err.message);
+    console.log(
+      "❌ FULL ERROR:",
+      JSON.stringify(err.response?.data || err.message, null, 2)
+    );
 
     return res.status(500).json({
       error: err.response?.data || err.message
@@ -130,7 +154,7 @@ app.get("/", (req, res) => {
 });
 
 // ==========================
-// START SERVER (RENDER SAFE)
+// START SERVER
 // ==========================
 const PORT = process.env.PORT || 5000;
 
